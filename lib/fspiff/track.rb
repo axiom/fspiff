@@ -22,7 +22,7 @@ module FSpiff
 
 			rescue => detail
 				$stderr.print detail.backtrace.join("\n")
-				EXIT false
+				exit false
 			ensure
 				f.close unless f.nil?
 			end
