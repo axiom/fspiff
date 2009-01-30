@@ -4,6 +4,9 @@ require 'fspiff/playlist'
 require 'fspiff/parser'
 require 'fspiff/parser/m3u'
 require 'fspiff/parser/filelist'
+require 'fspiff/printer'
+require 'fspiff/printers/plain'
+require 'fspiff/printers/xspf'
 
 module FSpiff
 	NAME = "fspiff"
