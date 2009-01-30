@@ -47,12 +47,14 @@ module FSpiff
 
 				opts.on("-o", "--out=file", "write output to file (default standard output)") do |m|
 					if File.exists?(m) and not @options[:overwrite]
-						errmsg("Not overwriting file without -f options.") if File.exists?(m)
+						errmsg("not overwriting existing files without the `--force' flag") if File.exists?(m)
 						exit false
 					end
 
 					@options[:output] = File.open(m, 'w')
 				end
+
+				@options[:input] ||= $stdin unless $stdin.tty?
 
 				opts.version = VERSION
 				opts.release = RELEASE
@@ -60,19 +62,27 @@ module FSpiff
 		end
 
 		def run(a=nil)
-			# Treat all extra options as filenames of playlists.
-			@files = @optparse.parse(ARGV)
+			begin
+				# Treat all extra options as filenames of playlists.
+				@files = @optparse.order(ARGV)
+			rescue OptionParser::InvalidOption
+				errmsg("invalid option")
+				errmsg("Try `#{FSpiff::NAME} --help' for more information.", false)
+				exit false
+			end
 
-			@options[:input]   ||= $stdin
+			@options[:input] ||= @files
+
+			# Don't read files from terminal, that is tedious.
+			if not @files.empty? and not @options[:input].kind_of?(Array)
+				errmsg("Reading from pipe but got filenames on commandline as well.")
+				exit false
+			end
+
+			@options[:input]   ||= @files
 			@options[:output]  ||= $stdout
 			@options[:parser]  ||= FSpiff::Parsers::Filelist.new(@options[:input], @options[:prefix])
 			@options[:printer] ||= FSpiff::Printers::XSPF.new(@options[:title], @options[:info])
-
-			# Don't read files from terminal, that is tedious.
-			if @options[:input].tty?
-				puts @optparse.help
-				exit false
-			end
 
 			@options[:parser].each do |filename|
 				begin
@@ -87,8 +97,9 @@ module FSpiff
 			exit true
 		end
 
-		def errmsg(str)
-			$stderr.puts(FSpiff::NAME + ": " + str)
+		def errmsg(str, prefix = true)
+			str = FSpiff::NAME + ": " + str if prefix
+			$stderr.puts(str)
 		end
 	end
 end
