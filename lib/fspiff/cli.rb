@@ -19,6 +19,14 @@ module FSpiff
 					exit true
 				end
 
+				opts.on("-t", "--title=playlist-title", "set title of playlist") do |o|
+					@options[:title] = o
+				end
+
+				opts.on("-i", "--info=playlist-info", "set info of playlist") do |o|
+					@options[:info] = o
+				end
+
 				opts.on("-p", "--prefix=directory", "set the prefix for relative filenames") do |p|
 					@options[:prefix] = p
 				end
@@ -49,16 +57,16 @@ module FSpiff
 				opts.version = VERSION
 				opts.release = RELEASE
 			end
-
-			@options[:input]   ||= $stdin
-			@options[:output]  ||= $stdout
-			@options[:parser]  ||= FSpiff::Parsers::Filelist.new(@options[:input], @options[:prefix])
-			@options[:printer] ||= FSpiff::Printers::XSPF.new
 		end
 
 		def run(a=nil)
 			# Treat all extra options as filenames of playlists.
 			@files = @optparse.parse(ARGV)
+
+			@options[:input]   ||= $stdin
+			@options[:output]  ||= $stdout
+			@options[:parser]  ||= FSpiff::Parsers::Filelist.new(@options[:input], @options[:prefix])
+			@options[:printer] ||= FSpiff::Printers::XSPF.new(@options[:title], @options[:info])
 
 			# Don't read files from terminal, that is tedious.
 			if @options[:input].tty?

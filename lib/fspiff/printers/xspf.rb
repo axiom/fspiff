@@ -5,9 +5,10 @@ require "builder"
 module FSpiff
 	module Printers
 		class XSPF < FSpiff::Printer
-			def initialize(title = nil, creator = nil, info = nil)
+
+			def initialize(title = nil, info = nil)
 				@title = title || ""
-				@creator = creator || FSpiff::NAME + " " + FSpiff::WWW
+				@creator = FSpiff::NAME + " " + FSpiff::WWW
 				@info = info || ""
 			end
 
@@ -17,7 +18,7 @@ module FSpiff
 
 				xspf.instruct!
 
-				xspf.playlist do
+				xspf.playlist :version => "1.0", :encoding => "UTF-8" do
 
 					xspf.title @title
 					xspf.creator @creator
