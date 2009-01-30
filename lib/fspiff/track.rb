@@ -8,8 +8,8 @@ module FSpiff
 
 		attr_reader :artist, :title, :album, :track
 
-		def initialize(filename=nil)
-			@artist, @title, @album, @track = [nil,nil,nil,nil]
+		def initialize(filename)
+			@artist, @title, @album, @track = ["","","",""]
 
 			begin
 				f = TagLib::File.new(filename)
@@ -19,10 +19,9 @@ module FSpiff
 				@album  = f.album
 				@track  = f.track
 
-			rescue Mahoro::Error
-			rescue TagLib::BadFile
-			rescue TagLib::BadTag
-				$stderr.puts("FUCK")
+			rescue => detail
+				$stderr.print detail.backtrace.join("\n")
+				exit false
 			ensure
 				f.close unless f.nil?
 			end

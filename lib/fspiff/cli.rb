@@ -6,6 +6,7 @@ module FSpiff
 
 		def initialize
 			@playlist = Playlist.new
+			@input = $stdin
 
 			@options = {}
 			@optparse = OptionParser.new do |opts|
@@ -19,8 +20,14 @@ module FSpiff
 					exit true
 				end
 
-				opts.on("-m", "--m3u=playlist", "get relative filenames from a m3u playlist")
-				opts.on("-p", "--prefix=directory", "set the prefix for relative filenames")
+				opts.on("-p", "--prefix=directory", "set the prefix for relative filenames") do |p|
+					@prefix = p
+				end
+
+				opts.on("-m", "--m3u=playlist", "get relative filenames from a m3u playlist") do |m|
+					@parser = M3u.new(m, @prefix)
+				end
+
 				opts.version = VERSION
 				opts.release = RELEASE
 			end
@@ -29,7 +36,6 @@ module FSpiff
 		def run(a=nil)
 			# Treat all extra options as filenames of playlists.
 			@files = @optparse.parse(ARGV)
-			puts @files
 
 			# Require some instructions or filenames on stdin.
 			if ARGV.length == 0 and $stdin.tty?
@@ -37,13 +43,15 @@ module FSpiff
 				# exit false
 			end
 
-			unless $stdin.tty?
-				$stdin.each do |line|
-					filename = line.gsub("\n","")
-					unless filename.nil?
-						@playlist.tracks << Track.new(filename)
-					end
+			@parser.each do |filename|
+				t = Track.new(filename)
+
+				if t.nil?
+					$stderr.puts("Could not read metadata from file. (" + filename + ")")
+					next
 				end
+
+				@playlist.tracks << t
 			end
 
 			puts @playlist.to_s

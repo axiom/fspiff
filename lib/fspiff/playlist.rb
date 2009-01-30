@@ -14,7 +14,7 @@ module FSpiff
 			albums.default = []
 
 			@tracks.each do |t|
-				albums[t.album] = albums[t.album] + [t]
+				albums[t.album || "unknown"] = albums[t.album] + [t]
 			end
 
 			buf = albums.map do |k,v|
