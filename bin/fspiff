@@ -4,4 +4,4 @@ $LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__) + '/../lib'))
 
 require 'fspiff'
 
-FSpiff::Base.new.run(ARGV)
+FSpiff::CLI.new.run(ARGV)
