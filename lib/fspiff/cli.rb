@@ -66,7 +66,7 @@ module FSpiff
 				exit false
 			end
 
-			@parser.each do |filename|
+			@options[:parser].each do |filename|
 				begin
 					t = Track.new(filename)
 					@playlist.tracks << t
@@ -75,7 +75,7 @@ module FSpiff
 				end
 			end
 
-			@output.write(@printer.print(@playlist))
+			@options[:output].write(@options[:printer].print(@playlist))
 			exit true
 		end
 
