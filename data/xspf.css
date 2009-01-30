@@ -1,0 +1,72 @@
+playlist {
+	background: #f0f0f0;
+	color: #3A3931;
+	font-size: 120%;
+	padding: 30px;
+}
+
+playlist > title {
+	font-variant: small-caps;
+	text-align: center;
+	font-size: 40px;
+	font-family: serif;
+	font-weight: bold;
+	display: block;
+	margin: 50px;
+}
+
+playlist > creator {
+	display: block;
+	margin: 0 auto;
+	width: 800px;
+	font-size: 20px;
+	text-align: right;
+}
+
+playlist > info {
+	font-size: 12px;
+	margin: 0 auto;
+	width: 800px;
+	display: block;
+	text-align: right;
+}
+
+track {
+	background: #D7D7D7;
+	display: block;
+	margin: 10px auto;
+	padding: 10px;
+	border: 1px solid #cacaca;
+	border-top-color: #efefef;
+	border-left-color: #efefef;
+	width: 800px;
+}
+
+track > * {
+	display: none;
+}
+
+track > title {
+	font-weight: bold;
+	display: block;
+	font-size: 24px;
+}
+
+track > creator, track > album {
+	display: inline;
+}
+
+track > creator:before, track > album:before {
+	font-style: italic;
+	color: #555;
+	font-size: 16px;
+	display: inline;
+}
+
+track > creator:before {
+	content: " by ";
+}
+
+track > album:before {
+	content: " from ";
+}
