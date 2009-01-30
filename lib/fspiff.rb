@@ -3,6 +3,7 @@ require 'fspiff/track'
 require 'fspiff/playlist'
 require 'fspiff/parser'
 require 'fspiff/parser/m3u'
+require 'fspiff/parser/filelist'
 
 module FSpiff
 	NAME = "fspiff"

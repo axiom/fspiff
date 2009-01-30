@@ -9,7 +9,7 @@ module FSpiff
 		attr_reader :artist, :title, :album, :track
 
 		def initialize(filename)
-			@artist, @title, @album, @track = ["","","",""]
+			raise ArgumentError unless File.readable?(filename)
 
 			begin
 				f = TagLib::File.new(filename)
@@ -21,10 +21,16 @@ module FSpiff
 
 			rescue => detail
 				$stderr.print detail.backtrace.join("\n")
-				exit false
+				EXIT false
 			ensure
 				f.close unless f.nil?
 			end
+
+			@artist ||= ""
+			@title  ||= ""
+			@album  ||= ""
+			@track  ||= ""
+
 		end
 
 		def to_s

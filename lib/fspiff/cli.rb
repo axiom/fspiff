@@ -6,7 +6,6 @@ module FSpiff
 
 		def initialize
 			@playlist = Playlist.new
-			@input = $stdin
 
 			@options = {}
 			@optparse = OptionParser.new do |opts|
@@ -25,12 +24,15 @@ module FSpiff
 				end
 
 				opts.on("-m", "--m3u=playlist", "get relative filenames from a m3u playlist") do |m|
-					@parser = M3u.new(m, @prefix)
+					@parser = FSpiff::Parsers::M3u.new(m, @prefix)
 				end
 
 				opts.version = VERSION
 				opts.release = RELEASE
 			end
+
+			@input  ||= $stdin
+			@parser ||= FSpiff::Parsers::Filelist.new(@input, @prefix)
 		end
 
 		def run(a=nil)
@@ -44,14 +46,12 @@ module FSpiff
 			end
 
 			@parser.each do |filename|
-				t = Track.new(filename)
-
-				if t.nil?
-					$stderr.puts("Could not read metadata from file. (" + filename + ")")
-					next
+				begin
+					t = Track.new(filename)
+					@playlist.tracks << t
+				rescue ArgumentError
+					$stderr.puts("Could not read metadata from file. Skipping.")
 				end
-
-				@playlist.tracks << t
 			end
 
 			puts @playlist.to_s

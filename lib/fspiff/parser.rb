@@ -1,7 +1,7 @@
 module FSpiff
 	class Parser
 		def each
-			raise "Implement this in your subclass."
+			raise NotImplementedError
 		end
 	end
 end
