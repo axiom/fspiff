@@ -18,13 +18,16 @@ module FSpiff
 
 				xspf.instruct!
 
-				xspf.playlist :version => "1.0", :encoding => "UTF-8" do
+				xspf.playlist :version => "1", :xmlns => "http://xspf.org/ns/0/" do
 
 					xspf.title @title
 					xspf.creator @creator
 					xspf.info @info
 
-					xspf.tracklist do
+					# FIXME: Should be formatted as XML schema dateTime.
+					xspf.date Time.now.utc
+
+					xspf.trackList do
 
 						playlist.tracks.each do |t|
 							xspf.track do

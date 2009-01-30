@@ -74,8 +74,9 @@ module FSpiff
 			@options[:input] ||= @files
 
 			# Don't read files from terminal, that is tedious.
-			if not @files.empty? and not @options[:input].kind_of?(Array)
-				errmsg("Reading from pipe but got filenames on commandline as well.")
+			if @options[:input].kind_of?(Array) and @options[:input].empty?
+				errmsg("no input files")
+				errmsg("Try `#{FSpiff::NAME} --help' for more information.", false)
 				exit false
 			end
 
@@ -89,8 +90,12 @@ module FSpiff
 					t = Track.new(filename)
 					@playlist.tracks << t
 				rescue ArgumentError
-					errmsg("Could not read metadata from file. Skipping.")
 				end
+			end
+
+			if @playlist.tracks.empty?
+				errmsg("could not find any tracks with meta data")
+				exit false
 			end
 
 			@options[:output].write(@options[:printer].print(@playlist))
