@@ -11,5 +11,5 @@ require 'fspiff/printers/xspf'
 module FSpiff
 	NAME = "fspiff"
 	VERSION = 0.1
-	RELEASE = `git branch|grep -e "^\*"|cut -d' ' -f2`.gsub("\n","")
+	RELEASE = `git-rev-parse --short HEAD`.gsub("\n","")
 end
