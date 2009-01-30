@@ -27,9 +27,5 @@ module FSpiff
 				f.close unless f.nil?
 			end
 		end
-
-		def to_s
-			@artist + " - " + @title
-		end
 	end
 end
