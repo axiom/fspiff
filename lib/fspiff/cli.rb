@@ -26,13 +26,13 @@ module FSpiff
 					@options[:printer] = o.to_sym
 				end
 
-				opts.on('-r', "--parser=filelist", "set parser, default is filelist") do |o|
+				opts.on('-r', "--parser=m3u", "set parser, default is filelist") do |o|
 					@options[:parser] = o.to_sym
 				end
 
 				opts.separator(" ")
 
-				opts.on("-t", "--title=playlist-title", "set title of playlist") do |o|
+				opts.on("-t", "--title=\"My songs\"", "set title of playlist") do |o|
 					@options[:title] = o
 				end
 
@@ -40,7 +40,7 @@ module FSpiff
 					@options[:info] = o
 				end
 
-				opts.on("-p", "--prefix=directory", "set the prefix for relative filenames") do |p|
+				opts.on("-p", "--prefix=directory", "set the prefix for filenames") do |p|
 					@options[:prefix] = p
 				end
 
@@ -48,12 +48,12 @@ module FSpiff
 
 				opts.separator(" ")
 
-				opts.on("-o", "--out=file", "write output to file (default standard output)") do |m|
+				opts.on("-o", "--out=file", "write output to file") do |m|
 					@options[:outfile] = m
 					@options[:output] = :file
 				end
 
-				opts.on("-f", "--force", "overwrite output file if it exists") do |f|
+				opts.on("-f", "--force", "overwrite output file") do |f|
 					@options[:overwrite] = true
 				end
 
