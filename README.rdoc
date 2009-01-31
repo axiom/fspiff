@@ -1,5 +1,5 @@
-# fspiff
+= fspiff
 Generate XSPF playlists from music files by reading meta data with taglib.
 
-## author
+== author
 Johannes Martinsson <johannes@antiklimax.se>

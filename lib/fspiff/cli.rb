@@ -2,6 +2,7 @@ require 'optparse'
 
 module FSpiff
 
+	# Provides a command line interface to fspiff.
 	class CLI
 
 		def initialize
@@ -19,6 +20,18 @@ module FSpiff
 					exit true
 				end
 
+				opts.separator(" ")
+
+				opts.on('-w', "--printer=plain", "set printer, default is xspf") do |o|
+					@options[:printer] = o.to_sym
+				end
+
+				opts.on('-r', "--parser=filelist", "set parser, default is filelist") do |o|
+					@options[:parser] = o.to_sym
+				end
+
+				opts.separator(" ")
+
 				opts.on("-t", "--title=playlist-title", "set title of playlist") do |o|
 					@options[:title] = o
 				end
@@ -31,59 +44,32 @@ module FSpiff
 					@options[:prefix] = p
 				end
 
-				opts.on("-m", "--m3u=playlist", "get relative filenames from a m3u playlist") do |m|
-					@options[:parser] = FSpiff::Parsers::M3u.new(m, @prefix)
-				end
+				# More tricky stuff.
 
-				opts.on("-x", "--xspf", "print XSPF version of playlist (default)")
+				opts.separator(" ")
 
-				opts.on("-t", "--text", "print plain text version of playlist") do |m|
-					@options[:printer] = FSpiff::Printers::Plain.new
+				opts.on("-o", "--out=file", "write output to file (default standard output)") do |m|
+					@options[:outfile] = m
+					@options[:output] = :file
 				end
 
 				opts.on("-f", "--force", "overwrite output file if it exists") do |f|
 					@options[:overwrite] = true
 				end
 
-				opts.on("-o", "--out=file", "write output to file (default standard output)") do |m|
-					if File.exists?(m) and not @options[:overwrite]
-						errmsg("not overwriting existing files without the `--force' flag") if File.exists?(m)
-						exit false
-					end
-
-					@options[:output] = File.open(m, 'w')
-				end
-
 				@options[:input] ||= $stdin unless $stdin.tty?
 
-				opts.version = VERSION
-				opts.release = RELEASE
+				opts.program_name = FSpiff::NAME
+				opts.version      = FSpiff::VERSION
+				opts.release      = FSpiff::RELEASE
+				opts.banner = "Usage: #{opts.program_name} [options] [filename]"
 			end
 		end
 
-		def run(a=nil)
-			begin
-				# Treat all extra options as filenames of playlists.
-				@files = @optparse.order(ARGV)
-			rescue OptionParser::InvalidOption
-				errmsg("invalid option")
-				errmsg("Try `#{FSpiff::NAME} --help' for more information.", false)
-				exit false
-			end
-
-			@options[:input] ||= @files
-
-			# Don't read files from terminal, that is tedious.
-			if @options[:input].kind_of?(Array) and @options[:input].empty?
-				errmsg("no input files")
-				errmsg("Try `#{FSpiff::NAME} --help' for more information.", false)
-				exit false
-			end
-
-			@options[:input]   ||= @files
-			@options[:output]  ||= $stdout
-			@options[:parser]  ||= FSpiff::Parsers::Filelist.new(@options[:input], @options[:prefix])
-			@options[:printer] ||= FSpiff::Printers::XSPF.new(@options[:title], @options[:info])
+		# Run fspiff with the options specified in `args'.
+		def run(args=nil)
+			parse_options(args)
+			handle_options
 
 			@options[:parser].each do |filename|
 				begin
@@ -102,9 +88,69 @@ module FSpiff
 			exit true
 		end
 
+		protected
+
+		def parse_options(args)
+			begin
+				@options[:extra] = @optparse.order(args)
+			rescue OptionParser::InvalidOption
+				errmsg("invalid option")
+				trymsg
+				exit false
+			end
+
+			@options[:input]   ||= @options[:extra]
+			@options[:output]  ||= :stdout
+			@options[:parser]  ||= :plain
+			@options[:printer] ||= :xspf
+		end
+
+		def handle_options
+			case @options[:parser]
+			when :m3u
+				@options[:parser] = FSpiff::Parsers::M3u.new(@options[:extra].shift, @options[:prefix])
+			when :plain
+				@options[:parser] = FSpiff::Parsers::Filelist.new(@options[:input], @options[:prefix])
+			else
+				errmsg("unknown parser")
+				trymsg
+				exit false
+			end
+
+			case @options[:printer]
+			when :plain
+				@options[:printer] = FSpiff::Printers::Plain.new
+			when :xspf
+				@options[:printer]= FSpiff::Printers::XSPF.new(@options[:title], @options[:info])
+			else
+				errmsg("unknown printer")
+				trymsg
+				exit false
+			end
+
+			case @options[:output]
+			when :file
+				f = @options[:outfile]
+				if File.exists?(f) and not @options[:overwrite]
+					errmsg("not overwriting existing files without the `--force' flag")
+					puts @options[:overwrite]
+					exit false
+				end
+
+				@options[:output] = File.open(f, 'w')
+			when :stdout
+				@options[:output] = $stdout
+			end
+		end
+
+		# Prints `str' prefixed with the application name to stderr.
 		def errmsg(str, prefix = true)
 			str = FSpiff::NAME + ": " + str if prefix
 			$stderr.puts(str)
+		end
+
+		def trymsg
+			errmsg("Try `#{FSpiff::NAME} --help' for more information.", false)
 		end
 	end
 end

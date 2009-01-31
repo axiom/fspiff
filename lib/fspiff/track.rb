@@ -15,11 +15,13 @@ module FSpiff
 				f = TagLib::File.new(filename)
 
 				@artist = f.artist || ""
-				@title  = f.title || ""
-				@album  = f.album || ""
-				@track  = f.track || ""
+				@title  = f.title  || ""
+				@album  = f.album  || ""
+				@track  = f.track  || ""
 				@length = f.length || ""
 
+			rescue TagLib::BadFile
+				raise ArgumentError
 			rescue => detail
 				$stderr.print detail.backtrace.join("\n")
 				exit false

@@ -1,5 +1,7 @@
 module FSpiff
 	module Printers
+
+		# Pretty printer for playlists.
 		class Plain < FSpiff::Printer
 
 			def print(playlist)

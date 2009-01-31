@@ -1,5 +1,6 @@
 require 'rake'
 require 'rake/gempackagetask'
+require 'rake/rdoctask'
 require 'rubygems'
 
 $LOAD_PATH.unshift(File.expand_path(File.join(File.dirname(__FILE__),'lib')))
@@ -7,6 +8,11 @@ $LOAD_PATH.unshift(File.expand_path(File.join(File.dirname(__FILE__),'lib')))
 require 'lib/fspiff'
 
 task :default => :package
+
+Rake::RDocTask.new do |rd|
+	rd.main = "README.rdoc"
+	rd.rdoc_files.include("README.rdoc", "lib/**/*.rb")
+end
 
 spec = Gem::Specification.new do |s|
 	s.name                  = FSpiff::NAME
@@ -29,5 +35,5 @@ spec = Gem::Specification.new do |s|
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
-	pkg.need_tar = true
+	pkg.need_tar_bz2 = true
 end
