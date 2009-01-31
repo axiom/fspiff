@@ -94,9 +94,7 @@ module FSpiff
 			begin
 				@options[:extra] = @optparse.order(args)
 			rescue OptionParser::InvalidOption
-				errmsg("invalid option")
-				trymsg
-				exit false
+				bail("invalid option")
 			end
 
 			@options[:input]   ||= @options[:extra]
@@ -112,9 +110,7 @@ module FSpiff
 			when :plain
 				@options[:parser] = FSpiff::Parsers::Filelist.new(@options[:input], @options[:prefix])
 			else
-				errmsg("unknown parser")
-				trymsg
-				exit false
+				bail("unknown parser")
 			end
 
 			case @options[:printer]
@@ -123,9 +119,7 @@ module FSpiff
 			when :xspf
 				@options[:printer]= FSpiff::Printers::XSPF.new(@options[:title], @options[:info])
 			else
-				errmsg("unknown printer")
-				trymsg
-				exit false
+				bail("unknown printer")
 			end
 
 			case @options[:output]
@@ -151,6 +145,12 @@ module FSpiff
 
 		def trymsg
 			errmsg("Try `#{FSpiff::NAME} --help' for more information.", false)
+		end
+
+		def bail(str)
+			errmsg(str)
+			trymsg
+			exit false
 		end
 	end
 end
