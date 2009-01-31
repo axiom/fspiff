@@ -90,6 +90,10 @@ module FSpiff
 		end
 
 		def handle_options
+			if @options[:input].is_a?(Array) and @options[:extra].empty?
+				bail("missing filenames")
+			end
+
 			case @options[:parser]
 			when :m3u
 				@options[:parser] = FSpiff::Parsers::M3u.new(@options[:extra], @options[:prefix])

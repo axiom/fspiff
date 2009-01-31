@@ -13,5 +13,5 @@ module FSpiff
 	NAME    = 'fspiff'
 	WWW     = 'http://antiklimax.se/projects/fspiff'
 	VERSION = '0.1'
-	RELEASE = `git-rev-parse --short HEAD`.gsub("\n",'')
+	RELEASE = '2009-01-31'
 end
