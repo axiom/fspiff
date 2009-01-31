@@ -18,14 +18,12 @@ spec = Gem::Specification.new do |s|
 	s.name                  = FSpiff::NAME
 	s.version               = FSpiff::VERSION
 	s.platform              = Gem::Platform::RUBY
-	s.summary               = 'Bla'
-	s.description           = 'BLah'
+	s.summary               = 'Create XSPF playlists from music files.'
+	s.description           = 'Create sharable XSPF playlists with meta data read from music files.'
 	s.homepage              = 'http://antiklimax.se/projects/fspiff'
 	s.rubyforge_project     = 'fspiff'
 	s.author                = 'Johannes Martinsson'
 	s.email                 = 'johannes@antiklimax.se'
-	s.post_install_message  = 'Tjoho'
-	s.required_ruby_version = '>= 3'
 	s.has_rdoc              = true
 	s.extra_rdoc_files      = ['README.rdoc']
 	s.files                 = %w{ README.rdoc Rakefile } + Dir[File.join('{bin,lib,data}','**','*')]
