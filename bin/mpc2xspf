@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# Example usage of fspiff together with mpd. This script exports the current
+# playlist in mpd to XSPF.
+
+PDIR="/var/lib/mpd/playlists/"
+PREFIX="/srv/music/"
+TNAME="mpc2xspf"
+TITLE="Current playlist in MPD."
+
+mpc save $TNAME
+fspiff -p $PREFIX -t "$TITLE" -rm3u ${PDIR}${TNAME}.m3u
+mpc rm $TNAME
