@@ -71,21 +71,7 @@ module FSpiff
 			parse_options(args)
 			handle_options
 
-			@options[:parser].each do |filename|
-				begin
-					t = Track.new(filename)
-					@playlist.tracks << t
-				rescue ArgumentError
-				end
-			end
-
-			if @playlist.tracks.empty?
-				errmsg("could not find any tracks with meta data")
-				exit false
-			end
-
-			@options[:output].write(@options[:printer].print(@playlist))
-			exit true
+			FSpiff::Base.run(@options[:parser], @options[:printer], @options[:output])
 		end
 
 		protected
@@ -106,7 +92,7 @@ module FSpiff
 		def handle_options
 			case @options[:parser]
 			when :m3u
-				@options[:parser] = FSpiff::Parsers::M3u.new(@options[:extra].shift, @options[:prefix])
+				@options[:parser] = FSpiff::Parsers::M3u.new(@options[:extra], @options[:prefix])
 			when :plain
 				@options[:parser] = FSpiff::Parsers::Filelist.new(@options[:input], @options[:prefix])
 			else
@@ -127,7 +113,6 @@ module FSpiff
 				f = @options[:outfile]
 				if File.exists?(f) and not @options[:overwrite]
 					errmsg("not overwriting existing files without the `--force' flag")
-					puts @options[:overwrite]
 					exit false
 				end
 

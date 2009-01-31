@@ -9,48 +9,54 @@ module FSpiff
 			# be used as a prefix when generating filenames.
 			def initialize(filename, prefix = nil)
 				@prefix = prefix
-				@filename = filename
-
+				@filenames = filename.to_a
 			end
 
 			# Run the parser, but fail completely if the file can not be
 			# opened for reading.
 			def each(&block)
-				prepare
 				files = []
-				@f.each do |line|
-					line.gsub!("\n","")
 
-					# Ignore these lines since they does not contain a
-					# filename.
-					next if /^#/.match(line)
+				@filenames.each do |filename|
+					f = open_file(filename)
+					f.each do |line|
+						line.gsub!("\n","")
 
-					# Skip empty lines as well.
-					next if /^\s*$/.match(line)
+						# Ignore these lines since they does not contain a
+						# filename.
+						next if /^#/.match(line)
 
-					line = File.join(@prefix, line) unless @prefix.nil?
-					files << line
+						# Skip empty lines as well.
+						next if /^\s*$/.match(line)
+
+						line = File.join(@prefix, line) unless @prefix.nil?
+						files << line
+					end
+					close_file(f)
 				end
 
-				postpare
 				files.each(&block)
 			end
 
 			private
 
 			# Try to open @filename for reading, or fail completely.
-			def prepare
+			def open_file(filename = nil)
+				filename ||= @filenames.shift
+
 				begin
-					@f = File.open(@filename, 'r')
+					f = File.open(filename, 'r')
 				rescue
 					$stderr.puts(FSpiff::NAME + ": could not open file for reading.")
-					@f.close unless @f.nil?
+					f.close unless f.nil?
 					exit false
 				end
+
+				f
 			end
 
-			def postpare
-				@f.close unless @f.nil?
+			def close_file(filename)
+				filename.close unless filename.nil?
 			end
 
 		end

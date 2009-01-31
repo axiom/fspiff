@@ -1,3 +1,4 @@
+require 'fspiff/base'
 require 'fspiff/cli'
 require 'fspiff/track'
 require 'fspiff/playlist'
