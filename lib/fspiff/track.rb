@@ -4,6 +4,7 @@ require "builder"
 
 module FSpiff
 
+	# Representation of a track.
 	class Track
 
 		attr_reader :artist, :title, :album, :track, :length
@@ -19,6 +20,11 @@ module FSpiff
 				@album  = f.album  || ""
 				@track  = f.track  || ""
 				@length = f.length || ""
+
+				# Require at least an artist and a title.
+				if @artist.empty? and @title.empty?
+					raise ArgumentError
+				end
 
 			rescue TagLib::BadFile
 				raise ArgumentError

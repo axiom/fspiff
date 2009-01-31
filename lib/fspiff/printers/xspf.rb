@@ -4,6 +4,8 @@ require "builder"
 
 module FSpiff
 	module Printers
+
+		# This printer produces XSPF output.
 		class XSPF < FSpiff::Printer
 
 			def initialize(title = nil, info = nil)
